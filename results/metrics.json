@@ -1,0 +1,15 @@
+{
+  "n_examples": 200,
+  "intent_accuracy": 1.0,
+  "intent_macro_f1": 1.0,
+  "escalation_precision": 1.0,
+  "escalation_recall": 1.0,
+  "escalation_f1": 1.0,
+  "avg_reply_quality_proxy": 0.7148,
+  "baselines": {
+    "trivial_majority_intent_acc": 0.08,
+    "keyword_rules_intent_acc": 0.41,
+    "keyword_rules_macro_f1": 0.3747
+  },
+  "n_failures_logged": 0
+}

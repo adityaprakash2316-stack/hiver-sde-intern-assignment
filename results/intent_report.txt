@@ -1,0 +1,20 @@
+                      precision    recall  f1-score   support
+
+        account_lock      1.000     1.000     1.000        14
+           app_crash      1.000     1.000     1.000        15
+  app_store_purchase      1.000     1.000     1.000        14
+       battery_drain      1.000     1.000     1.000        14
+      billing_refund      1.000     1.000     1.000        16
+complaint_escalation      1.000     1.000     1.000        16
+     feature_request      1.000     1.000     1.000        15
+     general_inquiry      1.000     1.000     1.000        14
+    hardware_failure      1.000     1.000     1.000        13
+         icloud_sync      1.000     1.000     1.000        15
+    ios_update_issue      1.000     1.000     1.000        13
+     performance_lag      1.000     1.000     1.000        14
+        screen_issue      1.000     1.000     1.000        12
+   wifi_connectivity      1.000     1.000     1.000        15
+
+            accuracy                          1.000       200
+           macro avg      1.000     1.000     1.000       200
+        weighted avg      1.000     1.000     1.000       200

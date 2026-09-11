@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  ai-service:
+    build: ./ai-service
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./ai-service/models:/app/models
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ai-service
+    environment:
+      - AI_SERVICE_BASE_URL=http://ai-service:8000
+
+  # Frontend is typically run via npm start in development.
+  # For a production image you would build the React app and serve it with nginx.
