@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Golden Set Labeler — AppleSupport</title>
+<style>
+  :root {
+    --bg: #20221f;
+    --panel: #2a2d29;
+    --panel-2: #33362f;
+    --ink: #ece8dd;
+    --ink-dim: #a8a596;
+    --amber: #e0a458;
+    --amber-dim: #7a5c34;
+    --escalate: #c1666b;
+    --safe: #7a9e7e;
+    --border: #454840;
+    --mono: 'IBM Plex Mono', 'Consolas', monospace;
+    --sans: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 32px 16px 80px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  h1 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: 0.2px;
+  }
+  .subtitle {
+    color: var(--ink-dim);
+    font-size: 13.5px;
+    margin: 0 0 28px;
+    line-height: 1.5;
+  }
+
+  .setup {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .setup h2 { font-size: 14px; margin: 0 0 12px; font-weight: 600; }
+  .file-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .file-row label { font-size: 13px; color: var(--ink-dim); width: 180px; flex-shrink: 0; }
+  input[type=file] {
+    color: var(--ink-dim);
+    font-size: 12.5px;
+    font-family: var(--sans);
+  }
+  input[type=file]::file-selector-button {
+    background: var(--panel-2);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+  .hint { font-size: 12px; color: var(--ink-dim); margin-top: 8px; line-height: 1.5; }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--panel-2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .progress-fill { height: 100%; background: var(--amber); width: 0%; transition: width 0.2s; }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: 12.5px; color: var(--ink-dim); margin-bottom: 20px;
+    font-family: var(--mono);
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 22px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .card.active { display: block; }
+  .field-label {
+    font-size: 11px; color: var(--ink-dim);
+    margin-bottom: 6px; font-family: var(--mono);
+  }
+  .msg-block { margin-bottom: 18px; }
+  .msg-text {
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .customer .msg-text { color: var(--ink); }
+  .reply .msg-text { color: #c9c5b8; }
+
+  .weak-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--amber);
+    border: 1px solid var(--amber-dim);
+    border-radius: 3px;
+    padding: 2px 8px;
+    margin-bottom: 18px;
+  }
+
+  .section-label {
+    font-size: 12px; color: var(--ink-dim);
+    margin: 18px 0 8px;
+    font-family: var(--mono);
+  }
+
+  .intent-grid {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .intent-btn {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 12.5px;
+    padding: 7px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .intent-btn:hover { border-color: var(--amber-dim); }
+  .intent-btn.suggested { border-color: var(--amber); color: var(--amber); }
+  .intent-btn.chosen { background: var(--amber); color: #20221f; border-color: var(--amber); font-weight: 600; }
+
+  .custom-row { display: flex; gap: 6px; margin-top: 8px; }
+  .custom-row input {
+    flex: 1;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 12.5px;
+    padding: 7px 10px;
+    border-radius: 4px;
+  }
+  .custom-row button {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--ink-dim);
+    font-size: 12.5px;
+    padding: 7px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .escalate-row { display: flex; gap: 8px; }
+  .esc-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .esc-btn.yes:hover, .esc-btn.yes.chosen { background: var(--escalate); border-color: var(--escalate); color: #fff; }
+  .esc-btn.no:hover, .esc-btn.no.chosen { background: var(--safe); border-color: var(--safe); color: #1b241c; }
+  .esc-btn:disabled { opacity: 0.4; cursor: default; }
+
+  .note-input {
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 12.5px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    margin-top: 12px;
+  }
+
+  .action-row { display: flex; gap: 8px; margin-top: 18px; }
+  .skip-btn, .save-btn {
+    padding: 9px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+  .skip-btn { background: transparent; border: 1px solid var(--border); color: var(--ink-dim); }
+  .save-btn { background: var(--amber); border: 1px solid var(--amber); color: #20221f; font-weight: 600; margin-left: auto; }
+  .save-btn:disabled { opacity: 0.35; cursor: default; background: var(--panel-2); color: var(--ink-dim); border-color: var(--border); }
+
+  .kbd-hint {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-dim);
+    margin-top: 14px; line-height: 1.7;
+  }
+  kbd {
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 3px; padding: 1px 6px; font-family: var(--mono); font-size: 10.5px;
+  }
+
+  .export-bar {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 6px; padding: 16px 20px; margin-top: 20px;
+  }
+  .export-btn {
+    background: var(--panel-2); border: 1px solid var(--border); color: var(--ink);
+    padding: 8px 16px; border-radius: 4px; font-size: 13px; cursor: pointer; font-family: var(--sans);
+  }
+  .export-count { font-family: var(--mono); font-size: 12.5px; color: var(--ink-dim); }
+
+  .done-msg {
+    display: none;
+    background: var(--panel); border: 1px solid var(--safe);
+    border-radius: 6px; padding: 24px; text-align: center;
+  }
+  .done-msg.active { display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Golden Set Labeler</h1>
+  <p class="subtitle">For the Hiver assignment's 150–250 hand-labelled AppleSupport examples. Everything stays in this browser tab — nothing uploads anywhere. Export whenever you want.</p>
+
+  <div class="setup" id="setupPanel">
+    <h2>Load your files</h2>
+    <div class="file-row">
+      <label>candidate_pool.jsonl</label>
+      <input type="file" id="candidateFile" accept=".jsonl,.txt">
+    </div>
+    <div class="file-row">
+      <label>Resume from export (optional)</label>
+      <input type="file" id="resumeFile" accept=".jsonl,.txt">
+    </div>
+    <div class="hint">Both files come from <code>data/golden/</code> in your project. The resume file is only needed if you already exported some labels earlier and want to continue.</div>
+  </div>
+
+  <div class="progress-bar" id="progressBarWrap" style="display:none;">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-label" id="progressLabel" style="display:none;"></div>
+
+  <div class="card" id="card">
+    <div class="field-label">CUSTOMER MESSAGE</div>
+    <div class="msg-block customer"><div class="msg-text" id="custText"></div></div>
+    <div class="field-label">HISTORICAL REPLY</div>
+    <div class="msg-block reply"><div class="msg-text" id="replyText"></div></div>
+    <div class="weak-badge" id="weakBadge"></div>
+
+    <div class="section-label">INTENT</div>
+    <div class="intent-grid" id="intentGrid"></div>
+    <div class="custom-row">
+      <input type="text" id="customIntent" placeholder="or type a new intent name…">
+      <button id="addCustomBtn">Add</button>
+    </div>
+
+    <div class="section-label">ESCALATE TO HUMAN?</div>
+    <div class="escalate-row">
+      <button class="esc-btn yes" id="escYes">Yes — escalate</button>
+      <button class="esc-btn no" id="escNo">No — auto-handle</button>
+    </div>
+
+    <input type="text" class="note-input" id="noteInput" placeholder="Optional note…">
+
+    <div class="action-row">
+      <button class="skip-btn" id="skipBtn">Skip this one</button>
+      <button class="save-btn" id="saveBtn" disabled>Save &amp; next</button>
+    </div>
+
+    <div class="kbd-hint">
+      <kbd>1</kbd>–<kbd>9</kbd> <kbd>0</kbd> pick intent · <kbd>y</kbd> / <kbd>n</kbd> escalate + save · <kbd>s</kbd> skip
+    </div>
+  </div>
+
+  <div class="done-msg" id="doneMsg">
+    <div style="font-size:15px; font-weight:600; margin-bottom:6px;">No more candidates.</div>
+    <div style="color:var(--ink-dim); font-size:13px;">Export below and check your total count.</div>
+  </div>
+
+  <div class="export-bar" id="exportBar" style="display:none;">
+    <button class="export-btn" id="exportBtn">Export golden_eval.jsonl</button>
+    <span class="export-count" id="exportCount">0 labeled</span>
+  </div>
+</div>
+
+<script>
+const BASE_INTENTS = [
+  "battery_drain","ios_update_issue","app_crash","icloud_sync","hardware_failure",
+  "account_lock","billing_refund","app_store_purchase","wifi_connectivity",
+  "performance_lag","screen_issue","feature_request","general_inquiry",
+  "complaint_escalation","accessibility_issue","software_bug"
+];
+
+let candidates = [];
+let doneIds = new Set();
+let labeled = [];   // existing resumed labels, kept verbatim
+let queue = [];      // candidates still to label
+let idx = 0;
+let chosenIntent = null;
+let customIntents = [];
+
+function parseJsonl(text) {
+  return text.split("\n").map(l => l.trim()).filter(Boolean).map(l => JSON.parse(l));
+}
+
+document.getElementById('candidateFile').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  f.text().then(text => {
+    candidates = parseJsonl(text);
+    tryStart();
+  });
+});
+
+document.getElementById('resumeFile').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  f.text().then(text => {
+    labeled = parseJsonl(text);
+    labeled.forEach(r => doneIds.add(r.source_tweet_id));
+    labeled.forEach(r => { if (!BASE_INTENTS.includes(r.intent) && !customIntents.includes(r.intent)) customIntents.push(r.intent); });
+    tryStart();
+  });
+});
+
+function tryStart() {
+  if (candidates.length === 0) return;
+  queue = candidates.filter(c => !doneIds.has(c.source_tweet_id));
+  idx = 0;
+  document.getElementById('setupPanel').style.display = 'none';
+  document.getElementById('progressBarWrap').style.display = 'block';
+  document.getElementById('progressLabel').style.display = 'flex';
+  document.getElementById('exportBar').style.display = 'flex';
+  renderIntentGrid();
+  showCard();
+}
+
+function renderIntentGrid() {
+  const grid = document.getElementById('intentGrid');
+  grid.innerHTML = '';
+  const all = [...BASE_INTENTS, ...customIntents];
+  all.forEach((intent, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'intent-btn';
+    btn.dataset.intent = intent;
+    btn.textContent = (i < 10 ? `${(i+1)%10} ` : '') + intent;
+    btn.addEventListener('click', () => selectIntent(intent));
+    grid.appendChild(btn);
+  });
+}
+
+function showCard() {
+  updateProgress();
+  if (idx >= queue.length) {
+    document.getElementById('card').classList.remove('active');
+    document.getElementById('doneMsg').classList.add('active');
+    return;
+  }
+  document.getElementById('doneMsg').classList.remove('active');
+  document.getElementById('card').classList.add('active');
+  const c = queue[idx];
+  document.getElementById('custText').textContent = c.customer_message;
+  document.getElementById('replyText').textContent = c.historical_reply;
+  document.getElementById('weakBadge').textContent = 'weak guess: ' + c.intent;
+  document.getElementById('noteInput').value = '';
+  chosenIntent = null;
+  document.querySelectorAll('.intent-btn').forEach(b => {
+    b.classList.remove('chosen', 'suggested');
+    if (b.dataset.intent === c.intent) b.classList.add('suggested');
+  });
+  document.getElementById('escYes').classList.remove('chosen');
+  document.getElementById('escNo').classList.remove('chosen');
+  document.getElementById('escYes').disabled = true;
+  document.getElementById('escNo').disabled = true;
+  document.getElementById('saveBtn').disabled = true;
+  document.getElementById('customIntent').value = '';
+}
+
+function selectIntent(intent) {
+  chosenIntent = intent;
+  document.querySelectorAll('.intent-btn').forEach(b => {
+    b.classList.toggle('chosen', b.dataset.intent === intent);
+  });
+  document.getElementById('escYes').disabled = false;
+  document.getElementById('escNo').disabled = false;
+}
+
+document.getElementById('addCustomBtn').addEventListener('click', addCustom);
+document.getElementById('customIntent').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addCustom(); }
+});
+function addCustom() {
+  const val = document.getElementById('customIntent').value.trim();
+  if (!val) return;
+  if (!BASE_INTENTS.includes(val) && !customIntents.includes(val)) {
+    customIntents.push(val);
+    renderIntentGrid();
+    // re-mark suggestion after grid rebuild
+    const c = queue[idx];
+    document.querySelectorAll('.intent-btn').forEach(b => {
+      if (b.dataset.intent === c.intent) b.classList.add('suggested');
+    });
+  }
+  selectIntent(val);
+}
+
+let pendingEscalate = null;
+document.getElementById('escYes').addEventListener('click', () => chooseEscalate(true));
+document.getElementById('escNo').addEventListener('click', () => chooseEscalate(false));
+function chooseEscalate(val) {
+  pendingEscalate = val;
+  document.getElementById('escYes').classList.toggle('chosen', val === true);
+  document.getElementById('escNo').classList.toggle('chosen', val === false);
+  document.getElementById('saveBtn').disabled = false;
+}
+
+document.getElementById('saveBtn').addEventListener('click', saveCurrent);
+function saveCurrent() {
+  if (chosenIntent === null || pendingEscalate === null) return;
+  const c = queue[idx];
+  labeled.push({
+    customer_message: c.customer_message,
+    historical_reply: c.historical_reply,
+    intent: chosenIntent,
+    weak_intent: c.intent,
+    should_escalate: pendingEscalate,
+    note: document.getElementById('noteInput').value.trim(),
+    source_tweet_id: c.source_tweet_id
+  });
+  pendingEscalate = null;
+  idx++;
+  showCard();
+  updateExportCount();
+}
+
+document.getElementById('skipBtn').addEventListener('click', () => {
+  idx++;
+  showCard();
+});
+
+function updateProgress() {
+  const total = queue.length;
+  const pct = total ? Math.round((idx / total) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').innerHTML =
+    `<span>${idx} / ${total} candidates reviewed this session</span><span>${labeled.length} total labeled</span>`;
+}
+
+function updateExportCount() {
+  document.getElementById('exportCount').textContent = `${labeled.length} labeled`;
+}
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const lines = labeled.map(r => JSON.stringify(r)).join('\n') + '\n';
+  const blob = new Blob([lines], { type: 'application/jsonl' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'golden_eval.jsonl';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.addEventListener('keydown', e => {
+  if (document.activeElement.tagName === 'INPUT') return;
+  if (!document.getElementById('card').classList.contains('active')) return;
+  if (e.key === 's') { e.preventDefault(); document.getElementById('skipBtn').click(); return; }
+  if (e.key >= '0' && e.key <= '9') {
+    const all = [...BASE_INTENTS, ...customIntents];
+    const n = e.key === '0' ? 9 : parseInt(e.key) - 1;
+    if (all[n]) selectIntent(all[n]);
+    return;
+  }
+  if (e.key === 'y' && chosenIntent) { chooseEscalate(true); saveCurrent(); return; }
+  if (e.key === 'n' && chosenIntent) { chooseEscalate(false); saveCurrent(); return; }
+});
+</script>
+</body>
+</html>

@@ -1,20 +1,36 @@
-                      precision    recall  f1-score   support
+                        precision    recall  f1-score   support
 
-        account_lock      1.000     1.000     1.000        14
-           app_crash      1.000     1.000     1.000        15
-  app_store_purchase      1.000     1.000     1.000        14
-       battery_drain      1.000     1.000     1.000        14
-      billing_refund      1.000     1.000     1.000        16
-complaint_escalation      1.000     1.000     1.000        16
-     feature_request      1.000     1.000     1.000        15
-     general_inquiry      1.000     1.000     1.000        14
-    hardware_failure      1.000     1.000     1.000        13
-         icloud_sync      1.000     1.000     1.000        15
-    ios_update_issue      1.000     1.000     1.000        13
-     performance_lag      1.000     1.000     1.000        14
-        screen_issue      1.000     1.000     1.000        12
-   wifi_connectivity      1.000     1.000     1.000        15
+   accessibility_issue      0.000     0.000     0.000         2
+          account_lock      0.000     0.000     0.000         1
+    app_store_purchase      0.000     0.000     0.000         2
+         battery_drain      0.733     1.000     0.846        11
+        billing_refund      0.000     0.000     0.000         3
+     bluetooth_pairing      0.000     0.000     0.000         1
+    carrier_activation      0.000     0.000     0.000         1
+         data_transfer      0.000     0.000     0.000         1
+   email_calendar_sync      0.000     0.000     0.000         1
+       feature_request      0.000     0.000     0.000         2
+         find_my_issue      0.000     0.000     0.000         1
+       general_inquiry      0.728     0.952     0.825        62
+general_praise_or_spam      0.000     0.000     0.000         1
+           icloud_sync      1.000     0.600     0.750         5
+      ios_update_issue      0.732     0.968     0.833        31
+    keyboard_input_bug      0.000     0.000     0.000         2
+     misdirected_tweet      0.000     0.000     0.000         1
+    notification_issue      0.000     0.000     0.000         1
+     parental_controls      0.000     0.000     0.000         1
+       performance_lag      0.500     0.333     0.400         3
+       praise_feedback      0.000     0.000     0.000         1
+  product_availability      0.000     0.000     0.000         1
+          screen_issue      1.000     0.750     0.857         4
+            siri_issue      0.000     0.000     0.000         1
+          software_bug      0.000     0.000     0.000         2
+software_compatibility      0.000     0.000     0.000         1
+          storage_full      0.000     0.000     0.000         1
+      trade_in_upgrade      0.000     0.000     0.000         1
+       warranty_repair      0.000     0.000     0.000         1
+     wifi_connectivity      1.000     0.800     0.889         5
 
-            accuracy                          1.000       200
-           macro avg      1.000     1.000     1.000       200
-        weighted avg      1.000     1.000     1.000       200
+              accuracy                          0.735       151
+             macro avg      0.190     0.180     0.180       151
+          weighted avg      0.605     0.735     0.656       151

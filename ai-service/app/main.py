@@ -80,7 +80,7 @@ class SupportAgent:
                 "Run: python scripts/generate_data.py"
             )
         data = []
-        with open(DATA_PATH) as f:
+        with open(DATA_PATH, encoding="utf-8") as f:
             for line in f:
                 data.append(json.loads(line))
         return data
@@ -93,7 +93,7 @@ class SupportAgent:
             pipe = joblib.load(model_path)
             self.vectorizer = pipe.named_steps["tfidf"]
             self.clf = pipe.named_steps["clf"]
-            with open(hist_path) as f:
+            with open(hist_path, encoding="utf-8") as f:
                 self.historical = json.load(f)
             self.tfidf_matrix = self.vectorizer.transform(
                 [h["customer_message"] for h in self.historical]
@@ -119,7 +119,7 @@ class SupportAgent:
 
         pipe = Pipeline([("tfidf", self.vectorizer), ("clf", self.clf)])
         joblib.dump(pipe, model_path)
-        with open(hist_path, "w") as f:
+        with open(hist_path, "w", encoding="utf-8") as f:
             json.dump(self.historical, f)
         print(f"Trained & saved model on {len(self.historical)} examples")
 

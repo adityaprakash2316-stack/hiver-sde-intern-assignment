@@ -39,7 +39,7 @@ from app.main import SupportAgent  # noqa: E402
 
 def load_golden():
     data = []
-    with open(GOLDEN) as f:
+    with open(GOLDEN, encoding="utf-8") as f:
         for line in f:
             data.append(json.loads(line))
     return data
@@ -101,7 +101,7 @@ def main():
         # Collect failures for analysis
         if result["intent"] != ex["intent"] or result["should_escalate"] != ex["should_escalate"]:
             failures.append({
-                "id": ex["id"],
+                "source_tweet_id": ex["source_tweet_id"],
                 "message": ex["customer_message"][:120],
                 "true_intent": ex["intent"],
                 "pred_intent": result["intent"],
@@ -165,6 +165,7 @@ def main():
         "avg_reply_quality_proxy": round(avg_reply, 4),
         "baselines": {
             "trivial_majority_intent_acc": round(trivial_intent_acc, 4),
+            "trivial_never_escalate_f1": round(trivial_esc_f1, 4),
             "keyword_rules_intent_acc": round(kw_acc, 4),
             "keyword_rules_macro_f1": round(kw_f1, 4),
         },
@@ -177,13 +178,13 @@ def main():
     print(intent_report)
 
     # Persist
-    with open(RESULTS / "metrics.json", "w") as f:
+    with open(RESULTS / "metrics.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
-    with open(RESULTS / "intent_report.txt", "w") as f:
+    with open(RESULTS / "intent_report.txt", "w", encoding="utf-8") as f:
         f.write(intent_report)
-    with open(RESULTS / "failures.jsonl", "w") as f:
+    with open(RESULTS / "failures.jsonl", "w", encoding="utf-8") as f:
         for fail in failures[:50]:
-            f.write(json.dumps(fail) + "\n")
+            f.write(json.dumps(fail, ensure_ascii=False) + "\n")
 
     print(f"\nWrote results to {RESULTS}/")
     print("Done. Headline intent accuracy: {:.1%}".format(intent_acc))
